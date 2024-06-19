@@ -10,7 +10,7 @@
 @code {
 
     private string balance = "5";
-
+    public HttpClient client = new HttpClient();
     // private async Task GetAccountDetails()
     // {
     //     Console.WriteLine("Button clicked!");
@@ -21,35 +21,35 @@
 
     private async Task GetAccountDetails()
     {
-        balance = "wait";
-        try
+        balance = "wait1";
+        // try
+        // {
+        Console.WriteLine("Attempting to fetch account details...");
+
+        //var response = await Http.GetAsyncJson<>("https://btcstakingapp.azurewebsites.net/api/acccount?email=shahan@autonicals.org"); // Adjust the URL as necessary
+        var accountDetails = await client.GetFromJsonAsync<AccountDetails>("https://btcstakingapp.azurewebsites.net/api/acccount?email=shahan@autonicals.org");
+        //response.EnsureSuccessStatusCode();
+        balance = "wait2";
+        StateHasChanged();  // Forces a re-render of the component
+
+        //var jsonString = response.Content.ReadAsString();
+        //var accountDetails = System.Text.Json.JsonSerializer.Deserialize<AccountDetails>(jsonString);
+
+        if (accountDetails != null)
         {
-            Console.WriteLine("Attempting to fetch account details...");
-
-            var response = await Http.GetAsync("https://btcstakingapp.azurewebsites.net/api/acccount?email=shahan@autonicals.org"); // Adjust the URL as necessary
-
-            //response.EnsureSuccessStatusCode();
-            balance = "wait";
-            StateHasChanged();  // Forces a re-render of the component
-
-            var jsonString = await response.Content.ReadAsStringAsync();
-            var accountDetails = System.Text.Json.JsonSerializer.Deserialize<AccountDetails>(jsonString);
-
-            if (accountDetails != null)
-            {
-                balance = accountDetails.Balance.ToString();
-            }
-            else
-            {
-                balance = "null";
-            }
+            balance = accountDetails.Balance.ToString();
         }
-        catch (Exception ex)
+        else
         {
-            Console.WriteLine($"Error fetching account details: {ex.Message}");
-            balance = ex.Message;
-            // Consider adding user-friendly error handling and displaying it in the UI
+            balance = "null";
         }
+        // }
+        // catch (Exception ex)
+        // {
+        //     Console.WriteLine($"Error fetching account details: {ex.Message}");
+        //     balance = ex.Message;
+        //     // Consider adding user-friendly error handling and displaying it in the UI
+        // }
     }
 
     public class AccountDetails
@@ -62,5 +62,4 @@
         public DateTime CreatedAt { get; set; }
         public string Status { get; set; }
     }
-
- }
+}
